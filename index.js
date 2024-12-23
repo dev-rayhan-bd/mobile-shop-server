@@ -187,6 +187,10 @@ app.post("/addToCart/:id/:email", async (req, res) => {
   const query = { _id: new ObjectId(id) };
   const product = await productsCollection.findOne(query);
 const newProd = {...product,buyerEmail:email}
+const existingProduct = await cartCollection.findOne(query);
+if(existingProduct){
+  return res.send({ message: "You  already add this product on cart" });
+}
   const result = await cartCollection.insertOne(newProd);
   res.send(result);
 });
@@ -205,7 +209,11 @@ app.post("/wishList/:id/:email", async (req, res) => {
   const query = { _id: new ObjectId(id) };
   const product = await productsCollection.findOne(query);
 const newProd = {...product,buyerEmail:email}
-  const result = await cartCollection.insertOne(newProd);
+const existingProduct = await wishListCollection.findOne(query);
+if(existingProduct){
+  return res.send({ message: "You  already add this product on cart" });
+}
+  const result = await wishListCollection.insertOne(newProd);
   res.send(result);
 });
 
@@ -213,7 +221,7 @@ const newProd = {...product,buyerEmail:email}
 app.get("/wishList/:email", async (req, res) => {
   const email = req.params.email;
   const query = {buyerEmail: email };
-  const result = await cartCollection.find(query).toArray();
+  const result = await wishListCollection.find(query).toArray();
   res.send(result);
 });
 
